@@ -3,18 +3,14 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [Header("Co generujemy")]
     public GameObject prefabKostki;
 
-    [Header("Ile")]
     public int liczbaKostek = 10;
 
-    [Header("Plane 10x10 - losowanie po siatce")]
     public int rozmiarSiatki = 10;      
     public float rozmiarPola = 1.0f;   
     public Vector3 srodekPlaszczyzny = Vector3.zero;
 
-    [Header("Wysokość kostki nad ziemią")]
     public float wysokoscY = 0.5f;
 
     void Start()
