@@ -1,0 +1,34 @@
+using UnityEngine;
+
+public class Poruszanie_kwadrat : MonoBehaviour
+{
+    public float predkosc = 2.0f;
+    public float dlugoscBoku = 10.0f;
+
+    private Vector3 punktStartowyBoku;
+    private Vector3 punktDocelowyBoku;
+
+    void Start()
+    {
+        punktStartowyBoku = transform.position;
+        punktDocelowyBoku = punktStartowyBoku + transform.forward * dlugoscBoku;
+    }
+
+    void Update()
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            punktDocelowyBoku,
+            predkosc * Time.deltaTime
+        );
+
+        if (Vector3.Distance(transform.position, punktDocelowyBoku) < 0.0001f)
+        {
+            
+            transform.Rotate(0f, 90f, 0f, Space.World);
+
+            punktStartowyBoku = transform.position;
+            punktDocelowyBoku = punktStartowyBoku + transform.forward * dlugoscBoku;
+        }
+    }
+}
