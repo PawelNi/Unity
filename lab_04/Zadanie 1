@@ -1,0 +1,107 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Randomowe_kostki : MonoBehaviour
+{
+   
+    public int liczbaObiektow = 10;
+    public float opoznienieSekundy = 3.0f;
+    public GameObject prefabObiektu; 
+
+    
+    public Material[] materialy; 
+
+    
+    public float wysokoscNadPlatforma = 0.5f;  
+    public float minimalnyOdstep = 1.1f;       
+
+    private readonly List<Vector3> listaPozycji = new List<Vector3>();
+
+    void Start()
+    {
+        if (prefabObiektu == null)
+        {
+            prefabObiektu = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        }
+
+        Bounds obszarPlatformy = PobierzBoundsPlatformy();
+        WygenerujLosowePozycje(obszarPlatformy);
+
+        StartCoroutine(GenerujObiektyCoroutine());
+    }
+
+    Bounds PobierzBoundsPlatformy()
+    {
+        Renderer rendererPlatformy = GetComponent<Renderer>();
+        if (rendererPlatformy != null) return rendererPlatformy.bounds;
+
+        Collider colliderPlatformy = GetComponent<Collider>();
+        if (colliderPlatformy != null) return colliderPlatformy.bounds;
+
+        Vector3 srodek = transform.position;
+        return new Bounds(srodek, new Vector3(10f, 1f, 10f));
+    }
+
+    void WygenerujLosowePozycje(Bounds obszarPlatformy)
+    {
+        listaPozycji.Clear();
+
+        float minX = obszarPlatformy.min.x;
+        float maxX = obszarPlatformy.max.x;
+        float minZ = obszarPlatformy.min.z;
+        float maxZ = obszarPlatformy.max.z;
+
+        float margines = 0.5f;
+        minX += margines; maxX -= margines;
+        minZ += margines; maxZ -= margines;
+
+        int maksProby = liczbaObiektow * 200;
+
+        int proba = 0;
+        while (listaPozycji.Count < liczbaObiektow && proba < maksProby)
+        {
+            proba++;
+
+            float losX = Random.Range(minX, maxX);
+            float losZ = Random.Range(minZ, maxZ);
+
+            float y = obszarPlatformy.max.y + wysokoscNadPlatforma;
+            Vector3 kandydat = new Vector3(losX, y, losZ);
+
+            bool zaBlisko = false;
+            for (int i = 0; i < listaPozycji.Count; i++)
+            {
+                if (Vector3.Distance(listaPozycji[i], kandydat) < minimalnyOdstep)
+                {
+                    zaBlisko = true;
+                    break;
+                }
+            }
+
+            if (!zaBlisko) listaPozycji.Add(kandydat);
+        }
+    }
+
+    IEnumerator GenerujObiektyCoroutine()
+    {
+        for (int i = 0; i < listaPozycji.Count; i++)
+        {
+            GameObject nowy = Instantiate(prefabObiektu, listaPozycji[i], Quaternion.identity);
+
+            if (materialy != null && materialy.Length > 0)
+            {
+                Renderer rendererNowego = nowy.GetComponent<Renderer>();
+                if (rendererNowego != null)
+                {
+                    Material losowyMaterial = materialy[Random.Range(0, materialy.Length)];
+                    rendererNowego.material = losowyMaterial;
+                }
+            }
+
+            yield return new WaitForSeconds(opoznienieSekundy);
+        }
+
+        yield break;
+    }
+}
