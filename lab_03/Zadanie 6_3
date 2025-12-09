@@ -1,0 +1,18 @@
+using UnityEngine;
+
+public class Sledzoncy_2 : MonoBehaviour
+{
+    public Transform sledzony;
+    public Vector3 przesuniecieWzgledemSledzonego = new Vector3(0f, 0f, -4f);
+    public float czasWygladzania = 0.25f;
+
+    private Vector3 predkoscChwilowa; 
+
+    void Update()
+    {
+        if (sledzony == null) return;
+
+        Vector3 pozycjaDocelowa = sledzony.position + przesuniecieWzgledemSledzonego;
+        transform.position = Vector3.SmoothDamp(transform.position, pozycjaDocelowa, ref predkoscChwilowa, czasWygladzania);
+    }
+}
