@@ -1,0 +1,42 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class Kamera : MonoBehaviour
+{
+    public Transform gracz;
+
+    public float czuloscMyszy = 2.0f;     
+    public float limitGoraDol = 90f;      
+
+    private float katPionowy;           
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void Update()
+    {
+        if (gracz == null) return;
+        if (Mouse.current == null) return;
+
+        Vector2 deltaMyszy = Mouse.current.delta.ReadValue();
+
+        float ruchMyszyX = deltaMyszy.x * czuloscMyszy;
+        float ruchMyszyY = deltaMyszy.y * czuloscMyszy;
+
+        gracz.Rotate(0f, ruchMyszyX, 0f, Space.World);
+
+        katPionowy -= ruchMyszyY;
+        katPionowy = Mathf.Clamp(katPionowy, -limitGoraDol, limitGoraDol);
+
+        transform.localRotation = Quaternion.Euler(katPionowy, 0f, 0f);
+
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+}
