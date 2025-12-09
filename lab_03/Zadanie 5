@@ -1,0 +1,55 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Spawner : MonoBehaviour
+{
+    [Header("Co generujemy")]
+    public GameObject prefabKostki;
+
+    [Header("Ile")]
+    public int liczbaKostek = 10;
+
+    [Header("Plane 10x10 - losowanie po siatce")]
+    public int rozmiarSiatki = 10;      
+    public float rozmiarPola = 1.0f;   
+    public Vector3 srodekPlaszczyzny = Vector3.zero;
+
+    [Header("Wysokość kostki nad ziemią")]
+    public float wysokoscY = 0.5f;
+
+    void Start()
+    {
+        if (prefabKostki == null)
+        {
+            prefabKostki = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        }
+
+        HashSet<Vector2Int> zajetePola = new HashSet<Vector2Int>();
+
+        int maksPol = rozmiarSiatki * rozmiarSiatki;
+        int ileStworzyc = Mathf.Min(liczbaKostek, maksPol);
+
+        for (int i = 0; i < ileStworzyc; i++)
+        {
+            Vector2Int pole;
+
+            do
+            {
+                pole = new Vector2Int(
+                    Random.Range(0, rozmiarSiatki),
+                    Random.Range(0, rozmiarSiatki)
+                );
+            }
+            while (!zajetePola.Add(pole));
+
+            float polowa = rozmiarSiatki * rozmiarPola * 0.5f;
+
+            float pozycjaX = (pole.x + 0.5f) * rozmiarPola - polowa + srodekPlaszczyzny.x;
+            float pozycjaZ = (pole.y + 0.5f) * rozmiarPola - polowa + srodekPlaszczyzny.z;
+
+            Vector3 pozycja = new Vector3(pozycjaX, wysokoscY, pozycjaZ);
+
+            Instantiate(prefabKostki, pozycja, Quaternion.identity);
+        }
+    }
+}
