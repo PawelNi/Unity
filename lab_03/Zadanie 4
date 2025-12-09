@@ -1,0 +1,44 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+[RequireComponent(typeof(Rigidbody))]
+public class Ruch_gracza : MonoBehaviour
+{
+    public float predkosc = 6.0f;
+
+    private Rigidbody rb;
+    private Vector2 kierunekRuchu;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Update()
+    {
+        var klawiatura = Keyboard.current;
+        if (klawiatura == null)
+        {
+            kierunekRuchu = Vector2.zero;
+            return;
+        }
+
+        float x = 0f;
+        float z = 0f;
+
+        if (klawiatura.aKey.isPressed || klawiatura.leftArrowKey.isPressed) x -= 1f;
+        if (klawiatura.dKey.isPressed || klawiatura.rightArrowKey.isPressed) x += 1f;
+
+        if (klawiatura.sKey.isPressed || klawiatura.downArrowKey.isPressed) z -= 1f;
+        if (klawiatura.wKey.isPressed || klawiatura.upArrowKey.isPressed) z += 1f;
+
+        kierunekRuchu = new Vector2(x, z);
+        if (kierunekRuchu.sqrMagnitude > 1f) kierunekRuchu.Normalize();
+    }
+
+    void FixedUpdate()
+    {
+        Vector3 przesuniecie = new Vector3(kierunekRuchu.x, 0f, kierunekRuchu.y) * predkosc * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + przesuniecie);
+    }
+}
