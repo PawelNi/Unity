@@ -1,0 +1,16 @@
+using UnityEngine;
+
+public class Sledzoncy_1 : MonoBehaviour
+{
+    public Transform sledzony;
+    public Vector3 przesuniecieWzgledemSledzonego = new Vector3(0f, 0f, -4f);
+    public float szybkoscLerp = 6f;
+
+    void Update()
+    {
+        if (sledzony == null) return;
+
+        Vector3 pozycjaDocelowa = sledzony.position + przesuniecieWzgledemSledzonego;
+        transform.position = Vector3.Lerp(transform.position, pozycjaDocelowa, szybkoscLerp * Time.deltaTime);
+    }
+}
