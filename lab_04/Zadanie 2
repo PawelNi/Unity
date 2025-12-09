@@ -1,0 +1,54 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class Ruch_gracza : MonoBehaviour
+{
+    public float predkoscGracza = 5.0f;
+    public float wysokoscSkoku = 1.5f;
+    public float wartoscGrawitacji = -9.81f;
+
+    private CharacterController kontrolerPostaci;
+    private Vector3 predkoscPionowa;
+    private bool czyNaZiemi;
+
+    public InputActionReference akcjaRuchu; 
+    public InputActionReference akcjaSkoku; 
+
+    void Awake()
+    {
+        kontrolerPostaci = GetComponent<CharacterController>();
+    }
+
+    void OnEnable()
+    {
+        akcjaRuchu.action.Enable();
+        akcjaSkoku.action.Enable();
+    }
+
+    void OnDisable()
+    {
+        akcjaRuchu.action.Disable();
+        akcjaSkoku.action.Disable();
+    }
+
+    void Update()
+    {
+        czyNaZiemi = kontrolerPostaci.isGrounded;
+        if (czyNaZiemi && predkoscPionowa.y < 0f)
+            predkoscPionowa.y = 0f;
+
+        Vector2 wejscie2D = akcjaRuchu.action.ReadValue<Vector2>();
+        Vector3 ruch = transform.right * wejscie2D.x + transform.forward * wejscie2D.y;
+        ruch = Vector3.ClampMagnitude(ruch, 1f);
+
+        if (akcjaSkoku.action.triggered && czyNaZiemi)
+            predkoscPionowa.y = Mathf.Sqrt(wysokoscSkoku * -2.0f * wartoscGrawitacji);
+
+        predkoscPionowa.y += wartoscGrawitacji * Time.deltaTime;
+
+        Vector3 ruchKoncowy = (ruch * predkoscGracza) + (Vector3.up * predkoscPionowa.y);
+
+        if (ruchKoncowy != Vector3.zero)
+            kontrolerPostaci.Move(ruchKoncowy * Time.deltaTime);
+    }
+}
