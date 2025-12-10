@@ -1,0 +1,33 @@
+using UnityEngine;
+
+public class Drzwi_otwieranie : MonoBehaviour
+{
+    public float odlegloscOtwarcia = 5f;  
+    public float predkoscDrzwi = 3f;
+
+    private Vector3 pozycjaZamknieta;
+    private Vector3 pozycjaOtwarta;
+    private bool czyOtwarte;
+
+    void Start()
+    {
+        pozycjaZamknieta = transform.position;
+        pozycjaOtwarta = pozycjaZamknieta + transform.forward * odlegloscOtwarcia;
+    }
+
+    void Update()
+    {
+        Vector3 cel = czyOtwarte ? pozycjaOtwarta : pozycjaZamknieta;
+        transform.position = Vector3.MoveTowards(transform.position, cel, predkoscDrzwi * Time.deltaTime);
+    }
+
+    public void Otworz()
+    {
+        czyOtwarte = true;
+    }
+
+    public void Zamknij()
+    {
+        czyOtwarte = false;
+    }
+}
