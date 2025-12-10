@@ -1,0 +1,23 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Kontakt_przeszkoda : MonoBehaviour
+{
+    public string tagPrzeszkody = "Przeszkoda";
+
+    private HashSet<GameObject> przeszkodyWKONTAKCIE = new HashSet<GameObject>();
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        GameObject obiekt = hit.gameObject;
+
+        if (!obiekt.CompareTag(tagPrzeszkody))
+            return;
+
+        if (!przeszkodyWKONTAKCIE.Contains(obiekt))
+        {
+            przeszkodyWKONTAKCIE.Add(obiekt);
+            Debug.Log("Rozpoczęto kontakt z przeszkodą: " + obiekt.name);
+        }
+    }
+}
