@@ -1,0 +1,60 @@
+using UnityEngine;
+
+public class Platforma_ruch : MonoBehaviour
+{
+    public Transform platforma;              
+    public Transform punktDocelowy;          
+    public float predkoscPlatformy = 2f;
+
+    private Vector3 pozycjaStartowa;
+    private bool czyAktywna;
+    private bool czyWraca;
+
+    void Awake()
+    {
+        Rigidbody cialo = GetComponent<Rigidbody>();
+        if (cialo == null) cialo = gameObject.AddComponent<Rigidbody>();
+        cialo.isKinematic = true;
+    }
+
+    void Start()
+    {
+        if (platforma != null) pozycjaStartowa = platforma.position;
+    }
+
+    void Update()
+    {
+        if (!czyAktywna || platforma == null || punktDocelowy == null) return;
+
+        Vector3 cel = czyWraca ? pozycjaStartowa : punktDocelowy.position;
+
+        platforma.position = Vector3.MoveTowards(
+            platforma.position,
+            cel,
+            predkoscPlatformy * Time.deltaTime
+        );
+
+        if (Vector3.Distance(platforma.position, cel) < 0.01f)
+        {
+            if (!czyWraca)
+            {
+                czyWraca = true; 
+            }
+            else
+            {
+                czyAktywna = false;
+                czyWraca = false;
+            }
+        }
+    }
+
+    void OnTriggerEnter(Collider inny)
+    {
+        if (inny.CompareTag("Player"))
+        {
+            if (platforma != null)
+                pozycjaStartowa = platforma.position;
+            czyAktywna = true;
+        }
+    }
+}
