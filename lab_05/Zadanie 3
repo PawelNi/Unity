@@ -1,0 +1,50 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Platforma_wypoints : MonoBehaviour
+{
+    public float predkoscPlatformy = 2f;
+    public float progDotarcia = 0.05f;
+
+    public List<Transform> punktyTrasy = new List<Transform>();
+
+    public bool startAutomatycznie = true;
+
+    private int indeksPunktu = 0;
+    private int kierunek = 1;     
+    private bool czyJedzie = false;
+
+    void Start()
+    {
+        czyJedzie = startAutomatycznie;
+
+        indeksPunktu = 0;
+        kierunek = 1;
+    }
+
+    void Update()
+    {
+        if (!czyJedzie) return;
+        if (punktyTrasy == null || punktyTrasy.Count < 2) return;
+        if (punktyTrasy[indeksPunktu] == null) return;
+
+        Vector3 pozycjaDocelowa = punktyTrasy[indeksPunktu].position;
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            pozycjaDocelowa,
+            predkoscPlatformy * Time.deltaTime
+        );
+
+        if (Vector3.Distance(transform.position, pozycjaDocelowa) <= progDotarcia)
+        {
+            if (indeksPunktu == punktyTrasy.Count - 1) kierunek = -1;
+           
+            else if (indeksPunktu == 0) kierunek = 1;
+
+            indeksPunktu += kierunek;
+
+            indeksPunktu = Mathf.Clamp(indeksPunktu, 0, punktyTrasy.Count - 1);
+        }
+    }
+}
