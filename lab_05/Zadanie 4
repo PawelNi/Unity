@@ -1,0 +1,30 @@
+using UnityEngine;
+
+public class Wyrzutnia : MonoBehaviour
+{
+    public float mnoznikWyrzutu = 3f;
+
+    void Awake()
+    {
+        Rigidbody cialo = GetComponent<Rigidbody>();
+        if (cialo == null) cialo = gameObject.AddComponent<Rigidbody>();
+        cialo.isKinematic = true;
+        cialo.useGravity = false;
+
+        BoxCollider kolider = GetComponent<BoxCollider>();
+        if (kolider != null) kolider.isTrigger = true;
+    }
+
+    void OnTriggerEnter(Collider inny)
+    {
+        Ruch_gracza ruch = inny.GetComponentInParent<Ruch_gracza>();
+        if (ruch == null) return;
+
+        float predkoscNormalnegoSkoku = Mathf.Sqrt(ruch.wysokoscSkoku * -2.0f * ruch.wartoscGrawitacji);
+        float predkoscWyrzutu = predkoscNormalnegoSkoku * mnoznikWyrzutu;
+
+        ruch.UstawPredkoscPionowaZewnetrznie(predkoscWyrzutu);
+
+        Debug.Log("Płyta: wyrzut " + mnoznikWyrzutu + "x");
+    }
+}
